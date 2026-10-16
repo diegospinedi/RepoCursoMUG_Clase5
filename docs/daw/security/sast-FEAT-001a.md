@@ -40,3 +40,17 @@
 ## Supresiones
 
 Ninguna.
+
+---
+
+## Re-ejecución — 2026-10-16 — loop correctivo desde VERIFY — PASSED
+
+**Alcance:** commit `a3c4412`. Incluye tests web nuevos, la ayuda de test `web/src/pruebas/cookies.ts`, la dependencia de desarrollo `@vitest/coverage-v8` 5.0.3, la configuración de cobertura en `web/vite.config.ts`, `coverlet.runsettings`, `docs/operacion/cobertura.md`, `.gitignore` y la eliminación de dos `using` sin uso en tests. No hay cambios en código de producción.
+
+| Regla | Resultado |
+|---|---|
+| F-SAST-01 | ✅ No hay secretos en el diff. Los tokens y contraseñas de test son ficticios. `web/coverage/` está ignorado |
+| F-SAST-02 a F-SAST-08 | ✅ El diff no agrega SQL, ejecución de comandos, `eval`, `innerHTML` ni criptografía |
+| F-SAST-13 / F-SAST-16 | ✅ `npm audit` en `web/`: 0 vulnerabilidades. El lockfile tiene 166 entradas, todas de registry.npmjs.org. `@vitest/coverage-v8` 5.0.3 tiene versión exacta y es solo de desarrollo (no llega al bundle) |
+
+Los hallazgos L-1 a L-4 de la ejecución anterior no cambian.
