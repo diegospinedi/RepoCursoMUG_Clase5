@@ -41,6 +41,18 @@ public static class RegistroInfraestructura
         return servicios;
     }
 
+    /// <summary>
+    /// Aplica las migraciones pendientes (al arrancar el servidor y el comando de blanqueo). Es idempotente.
+    /// No se usa <c>EnsureCreated</c>.
+    /// </summary>
+    public static async Task AplicarMigracionesAsync(IServiceProvider servicios)
+    {
+        ArgumentNullException.ThrowIfNull(servicios);
+
+        await using var alcance = servicios.CreateAsyncScope();
+        await alcance.ServiceProvider.GetRequiredService<OpticaDbContext>().Database.MigrateAsync();
+    }
+
     /// <summary>Cadena de conexión al archivo <c>optica.db</c> dentro de <paramref name="rutaBase"/>.</summary>
     public static string CadenaConexion(string rutaBase)
     {

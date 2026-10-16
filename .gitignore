@@ -26,6 +26,10 @@ test-results/
 *.db-wal
 *.db-shm
 
+# Logs (auditoría del blanqueo) y claves de Data Protection: nunca en el repo
+*.log
+key-*.xml
+
 # Herramientas
 .daw/scripts/__pycache__/
 
