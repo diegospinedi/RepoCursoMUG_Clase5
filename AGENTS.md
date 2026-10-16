@@ -38,6 +38,9 @@ Desde un presupuesto en estado Final emite factura electrónica a consumidor fin
 - SQLite como base de datos local (archivo, sin servidor)
 - React 19 + TypeScript + Vite, sobre Node 22
 - Integración ARCA WSFEv1 aislada en su propio módulo (RF-27, cambios normativos)
+- Install: npm ci en web/ y e2e/ (npm ≥ 10.9.8)
+- Build/typecheck: dotnet build Optica.sln · web: npm run build
+- Tests: dotnet test Optica.sln · web: npm run test:coverage · e2e: npm run test:harness
 ---
 
 ## Architecture conventions
