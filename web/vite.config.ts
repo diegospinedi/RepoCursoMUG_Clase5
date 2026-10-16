@@ -55,5 +55,14 @@ export default defineConfig({
     // Procesa las hojas de estilo propias para que las pruebas puedan leerlas y verificar que no tienen colores
     // escritos a mano (FR-16).
     css: { include: [/\/src\/.*\.css/] },
+    // `npm run test:coverage`: el mínimo es 80 % en las cuatro métricas (F-VER-03). El directorio de salida
+    // (`coverage/`) no se commitea.
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['**/*.test.*', 'src/pruebas/**', 'src/main.tsx'],
+      reporter: ['text', 'json-summary'],
+      thresholds: { lines: 80, branches: 80, functions: 80, statements: 80 },
+    },
   },
 });

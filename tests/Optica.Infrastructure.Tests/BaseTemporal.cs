@@ -1,7 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Optica.Infrastructure;
 using Optica.Infrastructure.Persistencia;
 
 namespace Optica.Infrastructure.Tests;

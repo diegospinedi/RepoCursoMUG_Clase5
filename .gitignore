@@ -17,6 +17,7 @@ TestResults/
 # Web
 node_modules/
 web/dist/
+web/coverage/
 src/Optica.Api/wwwroot/
 playwright-report/
 test-results/

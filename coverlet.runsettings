@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Criterio de cobertura .NET (coverlet.collector). El comando para medir, desde la raíz del repo, está en
+  docs/operacion/cobertura.md (dotnet test con la opción settings apuntando a este archivo).
+  Los informes quedan en tests/*/TestResults/<guid>/ (ignorado por git).
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura,json</Format>
+          <!-- Código generado por el compilador o por generadores ([GeneratedRegex], etc.): no lo escribe nadie del equipo. -->
+          <ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+          <!-- Migraciones de EF Core: código generado por dotnet ef. Su efecto se prueba con la base temporal. -->
+          <ExcludeByFile>**/Persistencia/Migrations/*.cs</ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

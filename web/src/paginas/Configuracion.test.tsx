@@ -1,6 +1,7 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { EVENTO_SESION_VENCIDA } from '../api/cliente';
 import { TOKEN_XSRF_DE_PRUEBA } from '../pruebas/constantes';
 import { renderizarConRutas } from '../pruebas/rutas';
 import { errorDeValidacion, instalarServidorFalso, type RespuestaFalsa } from '../pruebas/servidorFalso';
@@ -48,6 +49,18 @@ async function reemplazar(usuario: UserEvent, etiqueta: string, texto: string) {
 
 async function grabar(usuario: UserEvent) {
   await usuario.click(screen.getByRole('button', { name: 'Grabar' }));
+}
+
+async function cambiarContrasena(usuario: UserEvent, actual: string, nueva: string, repetida: string) {
+  await usuario.type(screen.getByLabelText('Contraseña actual'), actual);
+  await usuario.type(screen.getByLabelText('Contraseña nueva'), nueva);
+  await usuario.type(screen.getByLabelText('Repetí la contraseña nueva'), repetida);
+  await usuario.click(screen.getByRole('button', { name: 'Cambiar contraseña' }));
+}
+
+/** El mensaje general de la sección "Cambiar contraseña" (no el de la configuración). */
+function seccionContrasena() {
+  return within(screen.getByRole('region', { name: 'Cambiar contraseña' }));
 }
 
 describe('Configuracion', () => {
@@ -243,5 +256,83 @@ describe('Configuracion', () => {
     expect(screen.getByLabelText(ETIQUETAS.multiplo)).toHaveValue('50');
     expect(screen.queryByText('Configuración guardada')).not.toBeInTheDocument();
     expect(screen.queryByText('Pantalla de ingreso')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['red caída', { redCaida: true } as RespuestaFalsa, SIN_CONEXION],
+    ['403', { estado: 403, cuerpo: { title: 'Prohibido', status: 403 } } as RespuestaFalsa, 'Prohibido'],
+  ])('Configuracion_cargaFalla_%s_muestraMensajeSinFormulario', async (_caso, respuesta, esperado) => {
+    renderizarConfiguracion({ 'GET /api/configuracion': respuesta });
+
+    expect((await screen.findByRole('alert')).textContent).toBe(esperado);
+    expect(screen.queryByLabelText(ETIQUETAS.alicuota)).not.toBeInTheDocument();
+    expect(screen.queryByText('Cargando…')).not.toBeInTheDocument();
+  });
+
+  it('Configuracion_cambioContrasena_confirmacionDistinta_noEnvia', async () => {
+    const usuario = userEvent.setup();
+    const servidor = renderizarConfiguracion({ 'PUT /api/acceso/contrasena': { estado: 204 } });
+    await esperarCarga();
+
+    await cambiarContrasena(usuario, 'la-actual-123', 'una-nueva-larga', 'otra-nueva-larga');
+
+    expect(await screen.findByText('Las contraseñas no coinciden')).toBeInTheDocument();
+    expect(screen.getByLabelText('Repetí la contraseña nueva')).toHaveAccessibleDescription('Las contraseñas no coinciden');
+    expect(servidor.pedidosA('PUT', '/api/acceso/contrasena')).toHaveLength(0);
+    expect(screen.queryByText('La contraseña se cambió')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['400 sin campos de contraseña', errorDeValidacion({ otroCampo: ['No es válido'] }), 'Revisá los datos ingresados'],
+    ['429', { estado: 429, cuerpo: { title: 'Demasiados intentos', status: 429 } } as RespuestaFalsa, 'Demasiados intentos'],
+    ['red caída', { redCaida: true } as RespuestaFalsa, SIN_CONEXION],
+    ['500', { estado: 500, cuerpo: { title: 'Ocurrió un error inesperado', status: 500 } } as RespuestaFalsa, SIN_CONEXION],
+  ])('Configuracion_cambioContrasena_%s_muestraMensajeGeneral', async (_caso, respuesta, esperado) => {
+    const usuario = userEvent.setup();
+    renderizarConfiguracion({ 'PUT /api/acceso/contrasena': respuesta });
+    await esperarCarga();
+
+    await cambiarContrasena(usuario, 'la-actual-123', 'una-nueva-larga', 'una-nueva-larga');
+
+    expect((await seccionContrasena().findByRole('alert')).textContent).toBe(esperado);
+    expect(screen.getByLabelText('Contraseña actual')).not.toHaveAttribute('aria-invalid');
+    expect(screen.getByLabelText('Contraseña nueva')).not.toHaveAttribute('aria-invalid');
+    expect(screen.queryByText('La contraseña se cambió')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cambiar contraseña' })).toBeEnabled();
+  });
+
+  it('Configuracion_cambioContrasena_nuevaInvalida_muestraMensajeJuntoAlCampo', async () => {
+    const usuario = userEvent.setup();
+    renderizarConfiguracion({
+      'PUT /api/acceso/contrasena': errorDeValidacion({ contrasenaNueva: ['La contraseña debe tener al menos 8 caracteres'] }),
+    });
+    await esperarCarga();
+
+    await cambiarContrasena(usuario, 'la-actual-123', 'corta', 'corta');
+
+    const campo = screen.getByLabelText('Contraseña nueva');
+    await waitFor(() => expect(campo).toHaveAccessibleDescription('La contraseña debe tener al menos 8 caracteres'));
+    expect(screen.getByLabelText('Contraseña actual')).not.toHaveAttribute('aria-invalid');
+    expect(seccionContrasena().queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('Configuracion_cambioContrasena_sesionVencida_avisaSinMensaje', async () => {
+    const usuario = userEvent.setup();
+    const aviso = vi.fn();
+    window.addEventListener(EVENTO_SESION_VENCIDA, aviso);
+    try {
+      const servidor = renderizarConfiguracion({ 'PUT /api/acceso/contrasena': { estado: 401 } });
+      await esperarCarga();
+
+      await cambiarContrasena(usuario, 'la-actual-123', 'una-nueva-larga', 'una-nueva-larga');
+
+      await waitFor(() => expect(aviso).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(screen.getByRole('button', { name: 'Cambiar contraseña' })).toBeEnabled());
+      expect(servidor.pedidosA('PUT', '/api/acceso/contrasena')).toHaveLength(1);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.queryByText('La contraseña se cambió')).not.toBeInTheDocument();
+    } finally {
+      window.removeEventListener(EVENTO_SESION_VENCIDA, aviso);
+    }
   });
 });

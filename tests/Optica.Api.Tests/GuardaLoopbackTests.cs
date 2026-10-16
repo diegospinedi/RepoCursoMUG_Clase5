@@ -1,6 +1,5 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
 using Optica.Api.Seguridad;
 
 namespace Optica.Api.Tests;
