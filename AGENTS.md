@@ -99,6 +99,11 @@ Document significant architectural decisions and their trade-offs.
 Report any change that would violate the dependency rules.
 ---
 
+## Code conventions
+
+---
+
+## Domain glossary
 
 ---
 
