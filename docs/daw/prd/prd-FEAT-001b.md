@@ -5,7 +5,7 @@
 | Ticket | FEAT-001b |
 | Tracker | none |
 | Fecha | 2026-10-16 |
-| PRD loops | 0 |
+| PRD loops | 1 |
 | PRD padre | `docs/daw/prd/prd-FEAT-001.md` |
 | Fuente | `docs/daw/prd/PRD.md` (PRD de producto); la referencia `[PRD.md X]` indica el requisito de origen |
 
@@ -35,13 +35,15 @@ Este sub-ticket entrega el catálogo de artículos con el precio de venta calcul
 - FR-13: El sistema debe comparar el Código en el proveedor sin distinguir mayúsculas de minúsculas e ignorando los espacios en blanco al principio y al final. [PRD.md RF-94]
 - FR-14: El sistema debe rechazar completa, sin actualizar ningún artículo, una planilla que no respete el formato de FR-11 (archivo que no es `.xlsx`, columnas faltantes, columnas de más o encabezados distintos). [PRD.md RF-78]
 - FR-15: El sistema debe informar a la operadora que el formato de la planilla no es el esperado cuando la rechace según FR-14. [PRD.md RF-79]
-- FR-16: El sistema debe considerar inválido un Precio costo vacío o no numérico, y aceptar los valores negativos y el cero. [PRD.md RF-80]
+- FR-16: El sistema debe considerar inválido un Precio costo vacío, no numérico o cuyo valor absoluto supere $100.000.000, y aceptar los valores negativos y el cero dentro de ese rango. [PRD.md RF-80; tope decidido en PLAN, 2026-10-16]
 - FR-17: El sistema debe mostrar en pantalla la lista de las filas que no pudo actualizar y la razón de cada caso ("código inexistente" o "precio inválido"). [PRD.md RF-24]
 - FR-18: El sistema debe listar, junto con el resultado de FR-17, las filas que actualizó con un precio de costo negativo o igual a cero, con la indicación "actualizado con precio negativo o cero". [PRD.md RF-93]
 - FR-19: El sistema debe permitir desactivar un artículo, conservando todos sus datos. (Decisión de DEFINE, 2026-10-16: no se eliminan artículos.)
 - FR-20: El sistema debe permitir reactivar un artículo desactivado. (Decisión de DEFINE, 2026-10-16.)
 - FR-21: El sistema debe actualizar por planilla también los artículos inactivos, sin reactivarlos. (Decisión de DEFINE, 2026-10-16.)
 - FR-22: El sistema debe permitir buscar artículos en la pantalla del catálogo por código, por código en el proveedor o por descripción, por coincidencia parcial y sin distinguir mayúsculas ni acentos, mostrando activos e inactivos con su estado. (Supuesto: ver la sección Supuestos.)
+- FR-23: El sistema debe rechazar, sin grabar el artículo, un Margen de Utilidad menor que 0% o mayor que 1.000%, mostrando el mensaje "El margen debe estar entre 0 y 1.000" junto al campo. (Decisión de PLAN, 2026-10-16: reemplaza el supuesto S-03 "sin tope".)
+- FR-24: El sistema debe rechazar, sin grabar el artículo, un Precio de Costo cuyo valor absoluto supere $100.000.000, mostrando el mensaje "El precio de costo no puede superar $100.000.000" junto al campo. (Decisión de PLAN, 2026-10-16.)
 
 ## Requerimientos No Funcionales
 - NFR-01: El sistema debe soportar un catálogo de hasta 10.000 artículos y procesar una planilla de hasta 10.000 filas en menos de 120 segundos. [PRD.md RNF-12]
@@ -76,6 +78,12 @@ Este sub-ticket entrega el catálogo de artículos con el precio de venta calcul
 - AC-25 (NFR-01): WHEN se procesa una planilla de 10.000 filas sobre un catálogo de 10.000 artículos, THE sistema SHALL actualizar los precios de costo y recalcular los de venta en menos de 120 segundos. [PRD.md AC-62]
 - AC-26 (NFR-02): WHILE el múltiplo de redondeo comercial es $0,01, WHEN se graba un artículo cuyo precio de venta calculado es exactamente $1.666,66, THE sistema SHALL guardar $1.666,66 y no $1.666,67.
 - AC-27 (NFR-03): WHEN se ejecutan los criterios de aceptación de este PRD en Chrome o en Edge, en su versión estable vigente o en la inmediata anterior, THE sistema SHALL cumplirlos todos. [PRD.md AC-56]
+- AC-28 (FR-23): WHEN se graba un artículo con margen de utilidad 1.000, THE sistema SHALL guardarlo con ese margen.
+- AC-29 (FR-23): IF se intenta grabar un artículo con margen de utilidad 1.000,01, THEN THE sistema SHALL no grabarlo y mostrar "El margen debe estar entre 0 y 1.000" junto al campo Margen de Utilidad.
+- AC-30 (FR-23): IF se intenta grabar un artículo con margen de utilidad -0,01, THEN THE sistema SHALL no grabarlo y mostrar "El margen debe estar entre 0 y 1.000" junto al campo Margen de Utilidad.
+- AC-31 (FR-24): WHEN se graba un artículo con precio de costo $100.000.000, THE sistema SHALL guardarlo con ese precio de costo.
+- AC-32 (FR-24): IF se intenta grabar un artículo con precio de costo $100.000.000,01, THEN THE sistema SHALL no grabarlo y mostrar "El precio de costo no puede superar $100.000.000" junto al campo Precio de Costo.
+- AC-33 (FR-16, FR-17): IF la planilla contiene una fila con precio 100.000.001 para un artículo existente y otras filas válidas, THEN THE sistema SHALL actualizar las filas válidas, no modificar ese artículo y listar la fila como no actualizada con la razón "precio inválido".
 
 ## Fuera de Alcance
 - Eliminación física de artículos: solo se desactivan (FR-19).
@@ -89,7 +97,7 @@ Este sub-ticket entrega el catálogo de artículos con el precio de venta calcul
 Puntos que el PRD de producto no define y que se fijan acá. Requieren la confirmación de la usuaria al aprobar este PRD:
 - S-01 (FR-22): La pantalla del catálogo tiene una búsqueda propia, necesaria para encontrar el artículo que se quiere editar, desactivar o reactivar.
 - S-02: El Código en el proveedor no es único: si dos artículos lo comparten, la planilla actualiza a los dos (FR-12 dice "cada artículo cuyo código coincida").
-- S-03: El margen de utilidad no tiene un tope superior: puede superar el 100%.
+- S-03: (Reemplazado en PLAN, 2026-10-16, por FR-23 y FR-24.) El margen mínimo es 0%: no se admite un margen negativo, ni en el alta ni en la edición. El precio de costo negativo (hasta -$100.000.000) solo llega por planilla, según FR-16; al cargarlo a mano rige el mismo rango de FR-24.
 
 ## Riesgos y Mitigaciones
 - Riesgo: Un precio de costo negativo o cero importado por planilla produce un precio de venta negativo o cero. Aceptar esos valores fue una decisión explícita del responsable del proyecto (PRD.md, Riesgos). Mitigación: el sistema lista esas filas para que la operadora las revise (FR-18), y FEAT-001c impide usar en un presupuesto un precio unitario negativo.
