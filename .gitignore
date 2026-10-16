@@ -8,3 +8,36 @@
 .daw-sessions/
 .daw-journal.jsonl
 # END DAW
+
+# .NET
+bin/
+obj/
+TestResults/
+
+# Web
+node_modules/
+web/dist/
+src/Optica.Api/wwwroot/
+playwright-report/
+test-results/
+
+# SQLite (bases locales, nunca en el repo)
+*.db
+*.db-wal
+*.db-shm
+
+# Herramientas
+.daw/scripts/__pycache__/
+
+# Secretos y archivos locales (certificados ARCA, claves, configuración local)
+*.pfx
+*.p12
+*.key
+*.pem
+*.crt
+.env
+.env.*
+secrets.json
+appsettings.*.local.json
+.vs/
+*.user
