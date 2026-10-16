@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optica.Domain.Tests", "tests\Optica.Domain.Tests\Optica.Domain.Tests.csproj", "{FB0B93D0-E876-4D94-B269-3DE95A8D3CE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optica.Application", "src\Optica.Application\Optica.Application.csproj", "{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optica.Application.Tests", "tests\Optica.Application.Tests\Optica.Application.Tests.csproj", "{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,30 @@ Global
 		{FB0B93D0-E876-4D94-B269-3DE95A8D3CE2}.Release|x64.Build.0 = Release|Any CPU
 		{FB0B93D0-E876-4D94-B269-3DE95A8D3CE2}.Release|x86.ActiveCfg = Release|Any CPU
 		{FB0B93D0-E876-4D94-B269-3DE95A8D3CE2}.Release|x86.Build.0 = Release|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Debug|x64.Build.0 = Debug|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Debug|x86.Build.0 = Debug|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Release|x64.ActiveCfg = Release|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Release|x64.Build.0 = Release|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Release|x86.ActiveCfg = Release|Any CPU
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1}.Release|x86.Build.0 = Release|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Debug|x64.Build.0 = Debug|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Debug|x86.Build.0 = Debug|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Release|x64.ActiveCfg = Release|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Release|x64.Build.0 = Release|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Release|x86.ActiveCfg = Release|Any CPU
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +80,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5699D656-11C3-4231-B1C4-DBAD0B3D0BE5} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{FB0B93D0-E876-4D94-B269-3DE95A8D3CE2} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{A9174F5D-6D76-4050-9BF2-C8104FBC1EF1} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{34B3084B-CBCD-46AD-8F0B-D8679A539DFD} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
