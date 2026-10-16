@@ -13,4 +13,33 @@
     <ProjectReference Include="..\Optica.Infrastructure\Optica.Infrastructure.csproj" />
   </ItemGroup>
 
+  <!--
+    PublicarWeb: solo en `dotnet publish`. Compila el SPA de web/ (npm ci y npm run build) y copia web/dist a
+    wwwroot del directorio de publicación, de donde lo sirven UseStaticFiles y MapFallbackToFile. Cuelga de
+    ComputeFilesToPublish, que `dotnet build` y `dotnet test` no ejecutan: las suites .NET no dependen de npm.
+  -->
+  <PropertyGroup>
+    <DirectorioWeb>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../../web/'))</DirectorioWeb>
+  </PropertyGroup>
+
+  <Target Name="PublicarWeb" AfterTargets="ComputeFilesToPublish">
+    <Exec Command="npm --version" ContinueOnError="true" StandardOutputImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="CodigoNpm" />
+    </Exec>
+    <Error Condition="'$(CodigoNpm)' != '0'" Text="No se encontró npm. Para publicar hace falta Node.js 22 (con npm) en el PATH: se usa para compilar la interfaz web de $(DirectorioWeb)." />
+
+    <Exec Command="npm ci" WorkingDirectory="$(DirectorioWeb)" />
+    <Exec Command="npm run build" WorkingDirectory="$(DirectorioWeb)" />
+    <Error Condition="!Exists('$(DirectorioWeb)dist/index.html')" Text="La compilación de la interfaz web no generó $(DirectorioWeb)dist/index.html." />
+
+    <ItemGroup>
+      <ArchivosWeb Include="$(DirectorioWeb)dist/**/*" />
+      <ResolvedFileToPublish Include="@(ArchivosWeb)">
+        <RelativePath>wwwroot/%(ArchivosWeb.RecursiveDir)%(ArchivosWeb.Filename)%(ArchivosWeb.Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
 </Project>

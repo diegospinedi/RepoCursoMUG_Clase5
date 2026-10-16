@@ -1,0 +1,108 @@
+/*
+ * Estilos de la marca. Los colores NO se escriben acá: llegan como variables CSS desde Marca/branding.json
+ * (ver marca.ts). Este archivo se publica como hoja de estilos externa, compatible con el CSP del servidor.
+ */
+
+:root {
+  color-scheme: light;
+  font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+  line-height: 1.4;
+}
+
+body {
+  margin: 0;
+  background: var(--color-fondo);
+  color: var(--color-primario);
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-fondo);
+  border-bottom: 4px solid var(--color-primario);
+}
+
+.encabezado__logo {
+  display: block;
+  height: 64px;
+  width: auto;
+}
+
+.contenido {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.seccion {
+  margin-top: 2.5rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.campo label {
+  font-weight: 600;
+}
+
+.campo input,
+.campo select {
+  padding: 0.5rem;
+  font: inherit;
+  color: var(--color-primario);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-primario);
+  border-radius: 4px;
+}
+
+.campo input[aria-invalid='true'],
+.campo select[aria-invalid='true'] {
+  border-width: 3px;
+}
+
+.campo__error {
+  margin: 0;
+  font-weight: 700;
+}
+
+.campo__error::before {
+  content: '⚠ ';
+}
+
+.boton {
+  padding: 0.5rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-fondo);
+  background: var(--color-primario);
+  border: 2px solid var(--color-primario);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.boton--secundario {
+  color: var(--color-primario);
+  background: var(--color-fondo);
+}
+
+.mensaje {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--color-primario);
+}
+
+.mensaje--error {
+  font-weight: 700;
+}
