@@ -98,3 +98,69 @@ En la verificación cruzada se informó como faltante. La evidencia existe en lo
 - No hay datos reales de clientes, empleados, proveedores ni de la empresa en el repo.
 - Las contraseñas de test son ficticias.
 - **Alerta para FEAT-001c (Ley 25.326):** `optica.db` no está cifrado (AR-02). El cifrado en reposo tiene que resolverse en ese threat model, antes de guardar datos personales de clientes.
+
+---
+
+## Ronda 2 — 2026-10-16 — PASSED
+
+Se hizo después del loop correctivo en CODE (commits `a3c4412` y `e3ba8ba`). La verificación cruzada estuvo a cargo de `daw-module-verifier`.
+
+### Ejecución
+
+- `npm run test:coverage` en `web/`: 68/68 con salida 0. Sentencias 97,81 %, ramas 92,14 % (176/191), funciones 100 %, líneas 97,78 %.
+- `dotnet test Optica.sln --settings coverlet.runsettings`: 133/133.
+- `npm run build` en `web/`: sin errores.
+- `git diff 0a480f5..HEAD -- src/`: vacío. El loop no tocó código de producción.
+
+### Evidencia de AC-18 (NFR-04)
+
+| Navegador | Versión | Resultado | Fecha |
+|---|---|---|---|
+| Chrome (vigente) | 155.0.8059.80 | 6/6 | 2026-10-16 |
+| Edge (vigente) | 155.0.4283.45 | 6/6 | 2026-10-16 |
+| Chrome for Testing (anterior) | 154.0.8037.92 | 6/6 | 2026-10-16 |
+| Edge (anterior) | 154 | No probado: riesgo aceptado | — |
+
+- **Ejecución:** las tres corridas se hicieron desde un clon temporal del repo en Windows. La de Chrome 154 usó `OPTICA_E2E_EJECUTABLE_CHROME=%TEMP%\chrome-cft-154\chrome-win64\chrome.exe` con `npx playwright test --project=chrome`.
+- **Binario de Chrome 154:** salió de `https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.92/win64/chrome-win64.zip`, con SHA-256 del zip `B897EF3601C947AC0620C784556DEC719AC602B0159CE105927ACF645EE0F598`.
+- **Riesgo aceptado (Edge 154):** lo aceptó el usuario, Diego, el 2026-10-16. Edge no tiene una versión portable oficial de una versión anterior. Comparte motor Chromium con Chrome, y tanto Chrome 154 como Edge 155 pasaron.
+- **Mitigación:** repetir la suite en Edge cuando salga Edge 156, para que la 155 quede probada como versión anterior. La desviación respecto de NFR-04 se lleva al próximo ciclo de PRD.
+
+### Resultado por regla
+
+| Regla | Resultado |
+|---|---|
+| F-VER-01 | ✅ AC-01 a AC-17. ⚠️ AC-18 con riesgo aceptado (Edge 154) |
+| F-VER-02 | ✅ |
+| F-VER-03 | ✅ web con ramas al 92,14 % y umbral del 80 % en `test:coverage`. .NET por encima del 80 % en todos los proyectos |
+| F-VER-04 | ✅ |
+| F-VER-05 | ✅ (⚠️ sin ESLint) |
+| F-VER-06 | ✅ (⚠️ las cantidades difieren de la spec) |
+| W-VER-01 | ✅ |
+| W-VER-02 | ✅ |
+| W-VER-03 | ⚠️ |
+
+**Cobertura .NET por líneas**, medida sin excluir `CompilerGeneratedAttribute`:
+
+| Proyecto | Líneas |
+|---|---|
+| Domain | 94,1 % |
+| Application | 99,4 % |
+| Infrastructure | 93,6 % |
+| Api | 92,7 % |
+
+### WARNINGs (no bloquean)
+
+1. **AC-18:** Edge 154 sin probar, con el riesgo aceptado por el usuario.
+2. **`coverlet.runsettings`:** excluye `CompilerGeneratedAttribute`, y eso deja afuera los cuerpos de los métodos `async` y de las lambdas. Hay que dejar solo `GeneratedCodeAttribute` en el próximo ciclo.
+3. **ESLint:** no está configurado.
+4. **Cantidad de tests:** las cantidades difieren de la spec (hay 133 en .NET y 68 en web). Hay que actualizarlas en el próximo ciclo de spec.
+5. **Tests con reloj real y estado compartido:** `ComandoBlanqueoTests.cs:133,138` y `RepositoriosTests.cs:374,434` usan el reloj real, y `IniciarSesion.cs:18` tiene un `SemaphoreSlim` estático compartido entre tests.
+
+### Veredicto
+
+**PASSED**, con 0 FAILs y 5 WARNINGs.
+
+### Datos sensibles
+
+No hay datos reales en el diff. Sigue abierta la alerta para FEAT-001c: `optica.db` sin cifrar (AR-02, Ley 25.326).
