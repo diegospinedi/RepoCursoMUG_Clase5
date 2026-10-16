@@ -1,0 +1,9 @@
+{
+  "logo": "Marca/logo.png",
+  "colores": {
+    "primario": "#0903A0",
+    "fondo": "#FFFFFF"
+  },
+  "fuente": "Color primario medido sobre Marca/Marca.jpg (promedio de los píxeles del azul sólido del logo). logo.png es el recorte de Marca.jpg al área del logo, con 16 px de margen.",
+  "logoOriginal": "Marca/Marca.jpg"
+}
